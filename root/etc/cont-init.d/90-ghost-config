@@ -1,5 +1,12 @@
 #!/usr/bin/with-contenv bash
 
+QBIT_WEBUI_USER=${QBIT_WEBUI_USER:-admin}
+QBIT_WEBUI_PASS=${QBIT_WEBUI_PASS:-adminadmin}
+QBIT_WEBUI_PASS_MD5=$(echo -n ${QBIT_WEBUI_PASS} | md5sum | awk '{print $1}')
+
+# insert webui user / password configuration
+printf '%s\n' '' '[Preferences]' "WebUI\\Username=${QBIT_WEBUI_USER}" "WebUI\\Password_ha1=@ByteArray(${QBIT_WEBUI_PASS_MD5})" >> /config/qBittorrent/qBittorrent.conf
+
 # take control of permissions
 chown -R abc:abc \
 	/config \
