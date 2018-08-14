@@ -7,7 +7,21 @@ QBIT_WEBUI_PASS_MD5=$(echo -n ${QBIT_WEBUI_PASS} | md5sum | awk '{print $1}')
 # insert webui user / password configuration
 printf '%s\n' '' '[Preferences]' "WebUI\\Username=${QBIT_WEBUI_USER}" "WebUI\\Password_ha1=@ByteArray(${QBIT_WEBUI_PASS_MD5})" 'Downloads\SavePath=/downloads/' >> /config/qBittorrent/qBittorrent.conf
 
+cat <<"EOF"
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+         _               _
+    __ _| |__   ___  ___| |_
+   / _` | '_ \ / _ \/ __| __/
+  | (_| | | | | (_) \__ \ |_
+   \__, |_|_|_|\___/|___/\__|
+   |___/      /   _ \
+          (¯\| o (@) |/¯)
+           \_  .___.  _/
+            /   !_!   \
+           /_.--._.--._\
 
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+EOF
 
 # take control of permissions
 chown -R abc:abc \
