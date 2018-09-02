@@ -4,16 +4,41 @@ sed -i '/\[AutoRun\]/d' /config/qBittorrent/qBittorrent.conf
 sed -i '/enabled=false/d' /config/qBittorrent/qBittorrent.conf
 sed -i '/enabled=true/d' /config/qBittorrent/qBittorrent.conf
 sed -i '/program=/d' /config/qBittorrent/qBittorrent.conf
+
 sed -i '/WebUI\\Password_ha1=/d' /config/qBittorrent/qBittorrent.conf
 sed -i '/WebUI\\Username=/d' /config/qBittorrent/qBittorrent.conf
 sed -i '/Downloads\\SavePath=/d' /config/qBittorrent/qBittorrent.conf
+sed -i '/Queueing\\QueueingEnabled=/d' /config/qBittorrent/qBittorrent.conf
+sed -i '/Bittorrent\\MaxConnecs=/d' /config/qBittorrent/qBittorrent.conf
+sed -i '/Bittorrent\\MaxConnecsPerTorrent=/d' /config/qBittorrent/qBittorrent.conf
+sed -i '/Bittorrent\\MaxUploads=/d' /config/qBittorrent/qBittorrent.conf
+sed -i '/Bittorrent\\MaxUploadsPerTorrent=/d' /config/qBittorrent/qBittorrent.conf
+sed -i '/Downloads\\PreAllocation=/d' /config/qBittorrent/qBittorrent.conf
+
+sed -i '/\[BitTorrent\]/d' /config/qBittorrent/qBittorrent.conf
+sed -i '/Session\\BTProtocol/d' /config/qBittorrent/qBittorrent.conf
 
 QBIT_WEBUI_USER=${QBIT_WEBUI_USER:-admin}
 QBIT_WEBUI_PASS=${QBIT_WEBUI_PASS:-adminadmin}
 QBIT_WEBUI_PASS_MD5=$(echo -n ${QBIT_WEBUI_PASS} | md5sum | awk '{print $1}')
 
 # insert webui user / password configuration
-printf '%s\n' '' '[Preferences]' "WebUI\\Username=${QBIT_WEBUI_USER}" "WebUI\\Password_ha1=@ByteArray(${QBIT_WEBUI_PASS_MD5})" 'Downloads\SavePath=/downloads/' 'Queueing\QueueingEnabled=false' >> /config/qBittorrent/qBittorrent.conf
+printf '%s\n' '' \
+'[Preferences]' \
+"WebUI\\Username=${QBIT_WEBUI_USER}" \
+"WebUI\\Password_ha1=@ByteArray(${QBIT_WEBUI_PASS_MD5})" \
+'Downloads\SavePath=/downloads/' \
+'Queueing\QueueingEnabled=false' \
+'Bittorrent\MaxConnecs=3000' \
+'Bittorrent\MaxConnecsPerTorrent=150' \
+'Bittorrent\MaxUploads=1500' \
+'Bittorrent\MaxUploadsPerTorrent=75' \
+'Downloads\PreAllocation=true' \
+'WebUI\Address=*' \
+'WebUI\ServerDomains=*' \
+'[BitTorrent]' \
+'Session\BTProtocol=TCP' \
+>> /config/qBittorrent/qBittorrent.conf
 
 cat <<"EOF"
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
