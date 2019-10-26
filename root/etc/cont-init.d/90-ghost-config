@@ -62,5 +62,4 @@ EOF
 # take control of permissions
 chown -R abc:abc \
 	/config \
-	/media \
-	/downloads
+	/usr/local/bin
