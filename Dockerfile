@@ -8,5 +8,6 @@ WORKDIR /usr/local/bin
 # add default qBittorrent.conf
 COPY qBittorrent.conf qBittorrent.conf
 
-# add password-generator.py
+# add scripts
 COPY password-generator.py password-generator.py
+COPY qbit-postprocess.sh qbit-postprocess.sh
