@@ -37,7 +37,7 @@ case $ARG_CATEGORY in
 
     $RADARR_CATEGORY)
         REFRESH_NAME="RescanMovie"
-        REFRESH_URL="http://raddar:${RADARR_PORT}/api/command?apikey=${RADARR_API_KEY}"
+        REFRESH_URL="http://radarr:${RADARR_PORT}/api/command?apikey=${RADARR_API_KEY}"
     ;;
 esac
 
