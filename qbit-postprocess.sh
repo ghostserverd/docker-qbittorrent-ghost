@@ -49,6 +49,6 @@ if [ $REFRESH_URL != "" ]; then
             -H \"Content-Type: application/json\" \
             -X POST \
             ${REFRESH_URL})
-    echo $REFRESH_CMD >> /config/databases-refresh.log
+    echo $REFRESH_CMD >> /config/pvr-refresh.log
     eval $REFRESH_CMD
 fi
