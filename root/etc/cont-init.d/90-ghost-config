@@ -1,55 +1,11 @@
 #!/usr/bin/with-contenv bash
-
-sed -i '/\[AutoRun\]/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/enabled=false/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/enabled=true/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/program=/d' /config/qBittorrent/qBittorrent.conf
-
-sed -i '/WebUI\\Password_ha1=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/WebUI\\Username=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Connection\\PortRangeMin=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Downloads\\SavePath=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Queueing\\QueueingEnabled=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Bittorrent\\MaxConnecs=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Bittorrent\\MaxConnecsPerTorrent=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Bittorrent\\MaxUploads=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Bittorrent\\MaxUploadsPerTorrent=/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Downloads\\PreAllocation=/d' /config/qBittorrent/qBittorrent.conf
-
-sed -i '/\[BitTorrent\]/d' /config/qBittorrent/qBittorrent.conf
-sed -i '/Session\\BTProtocol/d' /config/qBittorrent/qBittorrent.conf
-
-QBIT_WEBUI_USER=${QBIT_WEBUI_USER:-admin}
-QBIT_WEBUI_PASS=${QBIT_WEBUI_PASS:-adminadmin}
-QBIT_CONNECTION_PORT=${QBIT_CONNECTION_PORT:-6881}
-QBIT_WEBUI_PASS_MD5=$(echo -n ${QBIT_WEBUI_PASS} | md5sum | awk '{print $1}')
-
-# insert webui user / password configuration
-printf '%s\n' '' \
-'[Preferences]' \
-"WebUI\\Username=${QBIT_WEBUI_USER}" \
-"WebUI\\Password_ha1=@ByteArray(${QBIT_WEBUI_PASS_MD5})" \
-"Connection\\PortRangeMin=${QBIT_CONNECTION_PORT}" \
-'Downloads\SavePath=/downloads/' \
-'Queueing\QueueingEnabled=false' \
-'Bittorrent\MaxConnecs=3000' \
-'Bittorrent\MaxConnecsPerTorrent=150' \
-'Bittorrent\MaxUploads=1500' \
-'Bittorrent\MaxUploadsPerTorrent=75' \
-'Downloads\PreAllocation=true' \
-'WebUI\Address=*' \
-'WebUI\ServerDomains=*' \
-'[BitTorrent]' \
-'Session\BTProtocol=TCP' \
->> /config/qBittorrent/qBittorrent.conf
-
 cat <<"EOF"
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
          _               _
     __ _| |__   ___  ___| |_
    / _` | '_ \ / _ \/ __| __/
   | (_| | | | | (_) \__ \ |_
-   \__, |_|_|_|\___/|___/\__|
+   \__, |_| |_|\___/|___/\__|
    |___/      /   _ \
           (¯\| o (@) |/¯)
            \_  .___.  _/
@@ -58,6 +14,23 @@ cat <<"EOF"
 
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 EOF
+
+QBIT_WEBUI_USER=${QBIT_WEBUI_USER:-admin}
+QBIT_WEBUI_PASS=${QBIT_WEBUI_PASS:-adminadmin}
+QBIT_CONNECTION_PORT=${QBIT_CONNECTION_PORT:-6881}
+QBIT_WEBUI_PASS_PBKDF2=$(echo -n ${QBIT_WEBUI_PASS} | base64 | xargs python3 /usr/local/bin/password-generator.py)
+QBIT_MAX_RETENTION=${QBIT_MAX_RETENTION:-43200}
+QBIT_MAX_RATIO=${QBIT_MAX_RATIO:-10}
+
+# copy the default config if not already present
+cp -n /usr/local/bin/qBittorrent.conf /config/qBittorrent/qBittorrent.conf
+
+# set custom settings
+sed -i -E "s|^WebUI\\\Username=.*$|WebUI\\\Username=$QBIT_WEBUI_USER|g" /config/qBittorrent/qBittorrent.conf
+sed -i -E "s|^WebUI\\\Password_PBKDF2=.*$|WebUI\\\Password_PBKDF2=@ByteArray($QBIT_WEBUI_PASS_PBKDF2)|g" /config/qBittorrent/qBittorrent.conf
+sed -i -E "s|^Connection\\\PortRangeMin=.*$|Connection\\\PortRangeMin=$QBIT_CONNECTION_PORT|g" /config/qBittorrent/qBittorrent.conf
+sed -i -E "s|^Bittorrent\\\MaxRatio=.*$|Bittorrent\\\MaxRatio=$QBIT_MAX_RATIO|g" /config/qBittorrent/qBittorrent.conf
+sed -i -E "s|^Session\\\GlobalMaxSeedingMinutes=.*$|Session\\\GlobalMaxSeedingMinutes=$QBIT_MAX_RETENTION|g" /config/qBittorrent/qBittorrent.conf
 
 # take control of permissions
 chown -R abc:abc \
