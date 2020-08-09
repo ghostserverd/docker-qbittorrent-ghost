@@ -22,8 +22,12 @@ RADARR_CATEGORY=${RADARR_CATEGORY:-"radarr"}
 RADARR_PORT=${RADARR_PORT:-""}
 RADARR_API_KEY=${RADARR_API_KEY:-""}
 
+LIDARR_CATEGORY=${LIDARR_CATEGORY:-"lidarr"}
+LIDARR_PORT=${LIDARR_PORT:-""}
+LIDARR_API_KEY=${LIDARR_API_KEY:-""}
+
 FILEBOT_LABEL=$ARG_LABEL
-case $TR_TORRENT_DIR in
+case $ARG_CATEGORY in
     *$SONARR_CATEGORY*)
         FILEBOT_LABEL="tv"
     ;;
@@ -31,13 +35,17 @@ case $TR_TORRENT_DIR in
     *$RADARR_CATEGORY*)
         FILEBOT_LABEL="movie"
     ;;
+
+    *$LIDARR_CATEGORY*)
+        FILEBOT_LABEL="music"
+    ;;
 esac
 
 FILEBOT_CMD=$(\
 echo curl \
     --data-urlencode name=\"${ARG_NAME}\" \
     --data-urlencode path=\"${ARG_PATH}\" \
-    --data-urlencode label=\"${ARG_LABEL}\" \
+    --data-urlencode label=\"${FILEBOT_LABEL}\" \
     http://filebot:${FILEBOT_PORT}/amc)
 
 echo $FILEBOT_CMD >> /config/filebot.log
@@ -58,6 +66,13 @@ case $ARG_CATEGORY in
         if [ $RADARR_PORT != "" ] && [ $RADARR_API_KEY != "" ]; then
             REFRESH_NAME="RescanMovie"
             REFRESH_URL="http://radarr:${RADARR_PORT}/api/command?apikey=${RADARR_API_KEY}"
+        fi
+    ;;
+
+    *$LIDARR_CATEGORY*)
+        if [ $LIDARR_PORT != "" ] && [ $LIDARR_API_KEY != "" ]; then
+            REFRESH_NAME="RescanArtist"
+            REFRESH_URL="http://lidarr:${LIDARR_PORT}/api/v1/command?apikey=${LIDARR_API_KEY}"
         fi
     ;;
 esac
